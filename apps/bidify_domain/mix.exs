@@ -1,8 +1,8 @@
-defmodule Bidify.Core.Mixfile do
+defmodule Bidify.Domain.Mixfile do
   use Mix.Project
 
   def project do
-    [app: :bidify_core,
+    [app: :bidify_domain,
      version: "0.1.0",
      elixir: "~> 1.3",
      build_embedded: Mix.env == :prod,

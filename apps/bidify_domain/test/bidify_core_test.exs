@@ -1,8 +1,8 @@
-defmodule Bidify.CoreTest do
+defmodule Bidify.DomainTest do
   use ExUnit.Case
-  doctest Bidify.Core
+  doctest Bidify.Domain
 
-  alias Bidify.Core.Auction
+  alias Bidify.Domain.Auction
 
   def auction do
     %Auction{minimum_bid: 10}

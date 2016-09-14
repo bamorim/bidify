@@ -1,5 +1,5 @@
-defmodule Bidify.Core.Auction do
-  alias Bidify.Core.{Auction, Bid}
+defmodule Bidify.Domain.Auction do
+  alias Bidify.Domain.{Auction, Bid}
   defstruct minimum_bid: 0, bids: []
 
   def minimum_bid_amount(auction) do
