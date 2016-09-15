@@ -27,6 +27,6 @@ defmodule Bidify.Domain.Mixfile do
   #
   # Type "mix help deps" for more examples and options
   defp deps do
-    []
+    [{:dialyxir, "~> 0.3.5", only: [:dev]}]
   end
 end
