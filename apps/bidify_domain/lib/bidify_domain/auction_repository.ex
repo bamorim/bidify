@@ -3,6 +3,8 @@ defmodule Bidify.Domain.AuctionRepository do
   Defines the behaviour for a auction repository
   """
 
+  @type t :: __MODULE__
+
   alias Bidify.Domain.Auction
 
   @doc """

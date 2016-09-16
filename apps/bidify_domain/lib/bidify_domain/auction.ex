@@ -9,18 +9,47 @@ defmodule Bidify.Domain.Auction do
   * The bid value is bigger than the current winning bid
   """
 
-  alias Bidify.Domain.{Auction, Bid, Person}
+  alias Bidify.Domain.{Auction, Bid, Person, Money}
+  import Bidify.Shared.Comparable
 
   @type id :: integer
-  @type t :: %Auction{id: id, minimum_bid: integer, seller_id: Person.id, bids: [Bid.t]}
+  @type t :: %Auction{id: id, minimum_bid: Money.t, seller_id: Person.id, bids: [Bid.t]}
   defstruct id: nil, minimum_bid: 0, seller_id: nil, bids: []
 
+  @doc "Use Case: Place a bid"
+  @spec place_bid(t, Person.id, Money.t) :: {:ok, t} | {:error, binary}
+  def place_bid(auction, bidder_id, value) do
+    cond do
+      value.currency != auction.minimum_bid.currency ->
+        {:error, "incorrect currency"}
+
+      minimum_bid_value(auction) |> bt(value) ->
+        {:error, "bid value is not enough"}
+
+      winning_bidder_id(auction) == bidder_id ->
+        {:error, "cannot bid on auction when winning already"}
+
+      auction.seller_id == bidder_id ->
+        {:error, "cannot bid on own auction"}
+
+      true ->
+        {:ok, auction |> do_place_bid(bidder_id, value)}
+    end
+  end
+
+  @doc "Actually modify the auction to include the bid"
+  @spec do_place_bid(t, Person.id, Money.t) :: t
+  defp do_place_bid(auction, bidder_id, value) do
+    bid = %Bid{bidder_id: bidder_id, value: value}
+    %{auction | bids: [bid | auction.bids]}
+  end
+
   @doc "Gives the minimum value for the next bid"
-  @spec minimum_bid_amount(t) :: integer
-  def minimum_bid_amount(auction) do
+  @spec minimum_bid_value(t) :: Money.t
+  def minimum_bid_value(auction) do
     case winning_bid(auction) do
-      %Bid{amount: amount} ->
-        amount
+      %Bid{value: value} ->
+        %{value | amount: value.amount+1}
       _ ->
         auction.minimum_bid
     end
@@ -39,32 +68,7 @@ defmodule Bidify.Domain.Auction do
       [] ->
         nil
       bids ->
-        bids |> Enum.max_by(&(&1.amount))
+        bids |> Enum.max_by(&(&1.value.amount))
     end
-  end
-
-  @doc "Use Case: Place a bid"
-  @spec place_bid(t, Person.id, integer) :: {:ok, t} | {:error, binary}
-  def place_bid(auction, bidder_id, amount) do
-    cond do
-      minimum_bid_amount(auction) > amount ->
-        {:error, "bid amount is not enough"}
-
-      winning_bidder_id(auction) == bidder_id ->
-        {:error, "cannot bid on auction when winning already"}
-
-      auction.seller_id == bidder_id ->
-        {:error, "cannot bid on own auction"}
-
-      true ->
-        {:ok, auction |> do_place_bid(bidder_id, amount)}
-    end
-  end
-
-  @doc "Actually modify the auction to include the bid"
-  @spec do_place_bid(t, Person.id, integer) :: t
-  defp do_place_bid(auction, bidder_id, amount) do
-    bid = %Bid{bidder_id: bidder_id, amount: amount}
-    %{auction | bids: [bid | auction.bids]}
   end
 end

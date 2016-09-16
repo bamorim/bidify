@@ -16,35 +16,13 @@ end
 
 defmodule Bidify.DomainTest.InMemoryAuctionRepository do
   @behaviour Bidify.Domain.AuctionRepository
-
-  def start_link do
-    Agent.start_link(fn -> %{} end, name: __MODULE__)
-  end
-
-  def find(id) do
-    {:ok, Agent.get(__MODULE__, &(Map.get(&1, id)))}
-  end
-
-  def save(auction) do
-    Agent.update(__MODULE__, &(Map.put(&1, auction.id, auction)))
-    :ok
-  end
-
-  def create(auction) do
-    Agent.get_and_update(__MODULE__, fn map ->
-      id = case map |> Map.keys do
-             [] -> 1
-             ids -> Enum.max(ids) + 1
-           end
-      auction = %{auction | id: id}
-      {auction, Map.put(map, auction.id, auction)}
-    end)
-  end
+  use Bidify.Shared.InMemoryEntityRepository
 end
 
 defmodule Bidify.Domain.BiddingServiceTest do
+  use ExUnit.Case
   alias Bidify.DomainTest.{InMemoryAuctionRepository, AcceptingChargingService, BiddingService}
-  alias Bidify.Domain.{Auction, BiddingService}
+  alias Bidify.Domain.{Auction, BiddingService, Money}
 
   setup_all do
     InMemoryAuctionRepository.start_link
@@ -59,12 +37,16 @@ defmodule Bidify.Domain.BiddingServiceTest do
     [config: config]
   end
 
+  def m(a) do
+    %Money{amount: a, currency: :brl}
+  end
+
   test "We can place an auction", context do
     bidder_id = :bidder
-    auction = InMemoryAuctionRepository.create(%Auction{id: 1, minimum_bid: 10, seller_id: :seller})
+    {:ok, auction} = InMemoryAuctionRepository.create(%Auction{id: 1, minimum_bid: m(10), seller_id: :seller})
 
     result = context[:config]
-    |> BiddingService.place_bid(auction.id, bidder_id, 11)
+    |> BiddingService.place_bid(auction.id, bidder_id, m(11))
 
     assert result == :ok
 
