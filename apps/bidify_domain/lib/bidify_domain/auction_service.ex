@@ -18,6 +18,21 @@ defmodule Bidify.Domain.AuctionService do
     do: config.auction_repository.create(auction)
   end
 
+  @doc "Use Case: Close auction"
+  def close_auction(config, auction_id) do
+    config.auction_repository.transaction(fn ->
+      with \
+        {:ok, auction} <- config.auction_repository.find(auction_id),
+        {:ok, auction} <- Auction.close(auction),
+        bid <- Auction.winning_bid(auction),
+        :ok <- config.charging_service.release(bid.reservation_id),
+        :ok <- config.charging_service.transfer(bid.bidder_id, bid.value, auction.seller_id)
+      do
+        {:ok, auction}
+      end
+    end)
+  end
+
   @doc "Use Case: Place a bid"
   @spec place_bid(config, Auction.id, person_id, Money.t) :: {:ok, Auction.t} | {:error, term}
   def place_bid(config, auction_id, person_id, amount) do
