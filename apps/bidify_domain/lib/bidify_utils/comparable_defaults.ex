@@ -1,6 +1,6 @@
 # Don't know if tis is a good idea
-defmodule Bidify.Shared.Comparable.Defaults do
-  import Bidify.Shared.Comparable, only: [compare: 2]
+defmodule Bidify.Utils.Comparable.Defaults do
+  import Bidify.Utils.Comparable, only: [compare: 2]
 
   def eq(a,b), do: compare(a,b) == 0
   def ne(a,b), do: not eq(a,b)

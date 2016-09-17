@@ -37,9 +37,9 @@ defmodule Bidify.Domain.Money do
   end
 end
 
-defimpl Bidify.Shared.Comparable, for: Bidify.Domain.Money do
+defimpl Bidify.Utils.Comparable, for: Bidify.Domain.Money do
   alias Bidify.Domain.Money
   def compare(%Money{amount: a1, currency: c}, %Money{amount: a2, currency: c}) do
-    Bidify.Shared.Comparable.compare(a1, a2)
+    Bidify.Utils.Comparable.compare(a1, a2)
   end
 end

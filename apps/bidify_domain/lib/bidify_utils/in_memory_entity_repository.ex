@@ -1,4 +1,4 @@
-defmodule Bidify.Shared.InMemoryEntityRepository do
+defmodule Bidify.Utils.InMemoryEntityRepository do
   defmacro __using__(opts=[]) do
     quote do
       def start_link do

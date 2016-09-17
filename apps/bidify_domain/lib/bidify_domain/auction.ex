@@ -10,7 +10,7 @@ defmodule Bidify.Domain.Auction do
   """
 
   alias Bidify.Domain.{Auction, Bid, Person, Money}
-  import Bidify.Shared.Comparable
+  import Bidify.Utils.Comparable
 
   @type id :: integer
   @type t :: %Auction{id: id, minimum_bid: Money.t, seller_id: Person.id, bids: [Bid.t]}

@@ -1,4 +1,4 @@
-defprotocol Bidify.Shared.Entity do
+defprotocol Bidify.Utils.Entity do
   @moduledoc """
   Protocol for an entity
   """
@@ -8,6 +8,6 @@ defprotocol Bidify.Shared.Entity do
   def same(_,_)
 end
 
-defimpl Bidify.Shared.Entity, for: Any do
+defimpl Bidify.Utils.Entity, for: Any do
   def same(%{id: id1}, %{id: id2}), do: id1 == id2
 end

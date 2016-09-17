@@ -1,9 +1,9 @@
-defprotocol Bidify.Shared.Comparable do
+defprotocol Bidify.Utils.Comparable do
   @moduledoc """
   Defines something that can be compared
   """
   @dialyzer {:nowarn_function, __protocol__: 1, impl_for!: 1}
-  alias Bidify.Shared.Comparable.Defaults
+  alias Bidify.Utils.Comparable.Defaults
   @fallback_to_any true
   def compare(a,b)
   defdelegate eq(a,b), to: Defaults
@@ -14,7 +14,7 @@ defprotocol Bidify.Shared.Comparable do
   defdelegate le(a,b), to: Defaults
 end
 
-defimpl Bidify.Shared.Comparable, for: Any do
+defimpl Bidify.Utils.Comparable, for: Any do
   def compare(a,b) do
     cond do
       a>b -> 1

@@ -75,7 +75,7 @@ end
 
 defmodule Bidify.DomainTest.InMemoryAuctionRepository do
   @behaviour Bidify.Domain.AuctionRepository
-  use Bidify.Shared.InMemoryEntityRepository
+  use Bidify.Utils.InMemoryEntityRepository
 end
 
 defmodule Bidify.Domain.AuctionServiceTest do
