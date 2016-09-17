@@ -111,10 +111,8 @@ defmodule Bidify.Domain.AuctionServiceTest do
 
     InMemoryChargingService.add_funds :bidder, m(12)
 
-    result = context[:config]
+    assert {:ok, _} = context[:config]
     |> AuctionService.place_bid(auction.id, :bidder, m(11))
-
-    assert result == :ok
 
     {:ok, modified_auction} = InMemoryAuctionRepository.find(auction.id)
     acc = InMemoryChargingService.get(:bidder)
@@ -164,5 +162,14 @@ defmodule Bidify.Domain.AuctionServiceTest do
     acc = InMemoryChargingService.get(:bidder)
     assert acc.reservations == %{}
     assert acc.funds == m(100)
+  end
+
+  test "One can create an auction", context do
+    assert {:ok, auction} = context[:config]
+    |> AuctionService.create_auction(:seller_id, "My Auction", m(10))
+
+    assert auction.id != nil
+
+    assert InMemoryAuctionRepository.find(auction.id) == {:ok, auction}
   end
 end

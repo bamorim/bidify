@@ -53,4 +53,21 @@ defmodule Bidify.Domain.AuctionTest do
     assert {:error, _} = Auction.create(nil, "name", m(1)), "Seller id is required"
     assert {:error, _} = Auction.create(:seller_id, nil, m(1)), "Name is required"
   end
+
+  test "The system can close an auction" do
+    {:ok, auction} = Auction.close(auction)
+    assert auction.closed == true
+  end
+
+  test "Cannot close an auction that is already closed" do
+    {:ok, auction} = Auction.close(auction)
+    assert {:error, _} = Auction.close(auction)
+  end
+
+  test "Cannot place a bid in a closed auction" do
+    {:ok, auction} = Auction.close(auction)
+
+    assert {:error, _} = auction
+    |> Auction.place_bid(@bidder_id, m(100), :rid)
+  end
 end

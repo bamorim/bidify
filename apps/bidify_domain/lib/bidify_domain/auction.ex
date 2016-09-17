@@ -14,8 +14,8 @@ defmodule Bidify.Domain.Auction do
 
   @type id :: term
   @type person_id :: term
-  @type t :: %Auction{id: id, name: binary, minimum_bid: Money.t, seller_id: person_id, bids: [Bid.t]}
-  defstruct id: nil, name: nil, minimum_bid: 0, seller_id: nil, bids: []
+  @type t :: %Auction{id: id, name: binary, closed: boolean, minimum_bid: Money.t, seller_id: person_id, bids: [Bid.t]}
+  defstruct id: nil, name: nil, closed: false, minimum_bid: 0, seller_id: nil, bids: []
 
   @doc "Use Case: Create an auction"
   @spec create(person_id, binary, Money.t) :: t
@@ -24,10 +24,20 @@ defmodule Bidify.Domain.Auction do
   end
   def create(_,_,_), do: {:error, "Invalid auction"}
 
+  @doc "Use Case: Close an auction"
+  @spec close(Auction.t) :: {:ok, Auction.t}
+  def close(%Auction{closed: true}), do: {:error, "already closed"}
+  def close(auction) do
+    {:ok, %{auction | closed: true}}
+  end
+
   @doc "Use Case: Place a bid"
   @spec place_bid(t, person_id, Money.t, term) :: {:ok, t} | {:error, binary}
   def place_bid(auction, bidder_id, value, rid) do
     cond do
+      auction.closed ->
+        {:error, "auction is already closed"}
+
       value.currency != auction.minimum_bid.currency ->
         {:error, "incorrect currency"}
 
