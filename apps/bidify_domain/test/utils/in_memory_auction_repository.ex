@@ -1,4 +1,4 @@
-defmodule Bidify.DomainTest.InMemoryAuctionRepository do
+defmodule InMemoryAuctionRepository do
   @behaviour Bidify.Domain.AuctionRepository
   use Bidify.Utils.InMemoryEntityRepository
 end

@@ -1,6 +1,5 @@
 defmodule Bidify.Domain.AuctionServiceTest do
   use ExUnit.Case
-  alias Bidify.DomainTest.{InMemoryAuctionRepository, InMemoryChargingService, AuctionService}
   alias Bidify.Domain.{Auction, AuctionService, Money}
 
   setup_all do
@@ -105,5 +104,10 @@ defmodule Bidify.Domain.AuctionServiceTest do
     |> AuctionService.close_auction(auction.id)
 
     bidder_acc = InMemoryChargingService.get(:bidder)
+    seller_acc = InMemoryChargingService.get(:seller)
+
+    assert bidder_acc.funds == m(0)
+    assert bidder_acc.reservations == %{}
+    assert seller_acc.funds == m(10)
   end
 end

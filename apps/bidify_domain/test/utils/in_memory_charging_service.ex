@@ -1,4 +1,4 @@
-defmodule Bidify.DomainTest.InMemoryChargingService do
+defmodule InMemoryChargingService do
   @behaviour Bidify.Domain.ChargingService
   alias Bidify.Domain.Money
   defmodule Account do
