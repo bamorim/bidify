@@ -10,10 +10,20 @@ defmodule Bidify.Domain.AuctionRepository do
   @doc """
   Gets an auction by it's identification
   """
-  @callback find(Auction.id) :: {:ok, Auction.t}
+  @callback find(Auction.id) :: {:ok, Auction.t} | {:error, term}
 
   @doc """
   Persists an auction by it's identification
   """
-  @callback save(Auction.t) :: {:ok, Auction.id}
+  @callback save(Auction.t) :: :ok | {:error, term}
+
+  @doc """
+  Start a transaction
+  """
+  @callback transaction((... -> any)) :: :ok | {:error, term}
+
+  @doc """
+  Rollback the current transaction
+  """
+  @callback rollback :: :ok
 end

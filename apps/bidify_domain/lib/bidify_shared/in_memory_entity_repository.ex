@@ -24,6 +24,31 @@ defmodule Bidify.Shared.InMemoryEntityRepository do
           {{:ok, entity}, Map.put(map, entity.id, entity)}
         end)
       end
+
+      def rollback do
+        raise :rollback
+      end
+
+      def transaction(fun) do
+        Agent.update(__MODULE__, fn map ->
+          map |> Map.put(:__dirty__, map)
+        end)
+
+        result =
+          try do
+            fun.()
+          rescue
+            _ ->
+              Agent.update(__MODULE__, &(Map.get(&1, :__dirty__)))
+              {:error, :rollback}
+          end
+
+        Agent.update(__MODULE__, fn map ->
+          map |> Map.delete(:__dirty__)
+        end)
+
+        result
+      end
     end
   end
 end
