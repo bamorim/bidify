@@ -9,8 +9,8 @@ defmodule Bidify.Domain.AuctionTest do
     %Auction{minimum_bid: m(100), seller_id: @seller_id}
   end
 
-  def m(a) do
-    %Money{amount: a, currency: :brl}
+  def m(a, currency \\ :brl) do
+    %Money{amount: a, currency: currency}
   end
 
   test "we can place a bid" do
@@ -41,6 +41,15 @@ defmodule Bidify.Domain.AuctionTest do
   end
 
   test "Cannot bid in a different cuurrency" do
-    assert {:error, _} = auction |> Auction.place_bid(@bidder_id, %Money{amount: 101, currency: :usd}, :rid)
+    assert {:error, _} = auction |> Auction.place_bid(@bidder_id, m(101,:usd), :rid)
+  end
+
+  test "Can create an auction" do
+    assert %Auction{} = Auction.create(:seller_id, m(1))
+  end
+
+  test "Auction is valdiated" do
+    assert {:error, _} = Auction.create(:seller_id, 1), "Starting bid should be a Money"
+    assert {:error, _} = Auction.create(nil, m(1)), "Seller id is required"
   end
 end
