@@ -14,15 +14,15 @@ defmodule Bidify.Domain.Auction do
 
   @type id :: term
   @type person_id :: term
-  @type t :: %Auction{id: id, minimum_bid: Money.t, seller_id: person_id, bids: [Bid.t]}
-  defstruct id: nil, minimum_bid: 0, seller_id: nil, bids: []
+  @type t :: %Auction{id: id, name: binary, minimum_bid: Money.t, seller_id: person_id, bids: [Bid.t]}
+  defstruct id: nil, name: nil, minimum_bid: 0, seller_id: nil, bids: []
 
   @doc "Use Case: Create an auction"
-  @spec create(person_id, Money.t) :: t
-  def create(seller_id, %Money{} = minimum_bid) when seller_id != nil do
+  @spec create(person_id, binary, Money.t) :: t
+  def create(seller_id, name, %Money{} = minimum_bid) when seller_id != nil and name != nil do
     %Auction{seller_id: seller_id, minimum_bid: minimum_bid}
   end
-  def create(_,_), do: {:error, "Invalid auction"}
+  def create(_,_,_), do: {:error, "Invalid auction"}
 
   @doc "Use Case: Place a bid"
   @spec place_bid(t, person_id, Money.t, term) :: {:ok, t} | {:error, binary}

@@ -45,11 +45,12 @@ defmodule Bidify.Domain.AuctionTest do
   end
 
   test "Can create an auction" do
-    assert %Auction{} = Auction.create(:seller_id, m(1))
+    assert %Auction{} = Auction.create(:seller_id, "name", m(1))
   end
 
   test "Auction is valdiated" do
-    assert {:error, _} = Auction.create(:seller_id, 1), "Starting bid should be a Money"
-    assert {:error, _} = Auction.create(nil, m(1)), "Seller id is required"
+    assert {:error, _} = Auction.create(:seller_id, "name", 1), "Starting bid should be a Money"
+    assert {:error, _} = Auction.create(nil, "name", m(1)), "Seller id is required"
+    assert {:error, _} = Auction.create(:seller_id, nil, m(1)), "Name is required"
   end
 end
