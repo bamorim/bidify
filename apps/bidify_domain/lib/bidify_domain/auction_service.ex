@@ -3,14 +3,16 @@ defmodule Bidify.Domain.AuctionService do
   Service to orchestrate the place bid usecase.
   """
 
-  alias Bidify.Domain.{ChargingService, AuctionRepository, Auction, Person}
+  alias Bidify.Domain.{ChargingService, AuctionRepository, Auction, Money}
 
   defmodule Config do
     defstruct charging_service: nil, auction_repository: nil
   end
   @type config :: %Config{charging_service: ChargingService.t, auction_repository: AuctionRepository.t}
+  @type person_id :: term
 
-  @spec place_bid(config, Auction.id, Person.id, integer) :: {:ok, Auction.t} | {:error, term}
+  @doc "Use Case: Place a bid"
+  @spec place_bid(config, Auction.id, person_id, Money.t) :: {:ok, Auction.t} | {:error, term}
   def place_bid(config, auction_id, person_id, amount) do
     config.auction_repository.transaction(fn ->
       with \

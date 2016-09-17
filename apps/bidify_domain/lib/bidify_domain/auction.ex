@@ -9,22 +9,23 @@ defmodule Bidify.Domain.Auction do
   * The bid value is bigger than the current winning bid
   """
 
-  alias Bidify.Domain.{Auction, Bid, Person, Money}
+  alias Bidify.Domain.{Auction, Bid, Money}
   import Bidify.Utils.Comparable
 
-  @type id :: integer
-  @type t :: %Auction{id: id, minimum_bid: Money.t, seller_id: Person.id, bids: [Bid.t]}
+  @type id :: term
+  @type person_id :: term
+  @type t :: %Auction{id: id, minimum_bid: Money.t, seller_id: person_id, bids: [Bid.t]}
   defstruct id: nil, minimum_bid: 0, seller_id: nil, bids: []
 
   @doc "Use Case: Create an auction"
-  @spec create(Person.id, Money.t) :: t
+  @spec create(person_id, Money.t) :: t
   def create(seller_id, %Money{} = minimum_bid) when seller_id != nil do
     %Auction{seller_id: seller_id, minimum_bid: minimum_bid}
   end
   def create(_,_), do: {:error, "Invalid auction"}
 
   @doc "Use Case: Place a bid"
-  @spec place_bid(t, Person.id, Money.t, term) :: {:ok, t} | {:error, binary}
+  @spec place_bid(t, person_id, Money.t, term) :: {:ok, t} | {:error, binary}
   def place_bid(auction, bidder_id, value, rid) do
     cond do
       value.currency != auction.minimum_bid.currency ->
@@ -45,7 +46,7 @@ defmodule Bidify.Domain.Auction do
   end
 
   @doc "Actually modify the auction to include the bid"
-  @spec do_place_bid(t, Person.id, Money.t, term) :: t
+  @spec do_place_bid(t, person_id, Money.t, term) :: t
   defp do_place_bid(auction, bidder_id, value, rid) do
     bid = %Bid{bidder_id: bidder_id, value: value, reservation_id: rid}
     %{auction | bids: [bid | auction.bids]}
@@ -63,7 +64,7 @@ defmodule Bidify.Domain.Auction do
   end
 
   @doc "Gives the id of the current winner"
-  @spec winning_bidder_id(t) :: Person.t | nil
+  @spec winning_bidder_id(t) :: person_id | nil
   def winning_bidder_id(auction) do
     with %Bid{bidder_id: bidder_id} <- winning_bid(auction), do: bidder_id
   end

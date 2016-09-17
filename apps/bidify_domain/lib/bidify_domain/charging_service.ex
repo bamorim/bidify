@@ -3,16 +3,16 @@ defmodule Bidify.Domain.ChargingService do
   Specification for a Charging Service
   """
 
-  alias Bidify.Domain.Person
+  alias Bidify.Domain.Money
 
   @type t :: module
-  @type money :: integer
-  @type reservation_id :: integer
+  @type reservation_id :: term
+  @type person_id :: term
 
   @doc """
   Reserves an amount of money for use later
   """
-  @callback reserve(Person.id, money) :: {:ok, reservation_id} | {:error, term}
+  @callback reserve(person_id, Money.t) :: {:ok, reservation_id} | {:error, term}
 
   @doc """
   Relases a reservation
@@ -22,5 +22,5 @@ defmodule Bidify.Domain.ChargingService do
   @doc """
   Transfer money from one person to another
   """
-  @callback transfer(Person.id, reservation_id | money, Person.id) :: :ok | {:error, term}
+  @callback transfer(person_id, Money.t, person_id) :: :ok | {:error, term}
 end

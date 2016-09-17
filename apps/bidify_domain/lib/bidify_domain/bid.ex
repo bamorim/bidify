@@ -1,6 +1,7 @@
 defmodule Bidify.Domain.Bid do
-  alias Bidify.Domain.{Bid, Person, Money}
+  alias Bidify.Domain.{Bid, Money}
 
-  @type t :: %Bid{bidder_id: Person.t, value: Money.t, reservation_id: term}
+  @type person_id :: term
+  @type t :: %Bid{bidder_id: person_id, value: Money.t, reservation_id: term}
   defstruct bidder_id: nil, value: nil, reservation_id: nil
 end
