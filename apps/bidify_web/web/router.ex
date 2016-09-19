@@ -27,6 +27,8 @@ defmodule Bidify.Web.Router do
     get "/login", SessionController, :new
     post "/login", SessionController, :create
     get "/logout", SessionController, :delete
+
+    resources "/auctions", AuctionsController, only: [:new, :create, :show]
   end
 
   # Other scopes may use custom stacks.

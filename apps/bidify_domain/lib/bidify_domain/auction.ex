@@ -19,8 +19,9 @@ defmodule Bidify.Domain.Auction do
 
   @doc "Use Case: Create an auction"
   @spec create(person_id, binary, Money.t) :: t
+  def create(_, "", _), do: {:error, "Name must not be empty"}
   def create(seller_id, name, %Money{} = minimum_bid) when seller_id != nil and name != nil do
-    %Auction{seller_id: seller_id, minimum_bid: minimum_bid}
+    %Auction{seller_id: seller_id, minimum_bid: minimum_bid, name: name}
   end
   def create(_,_,_), do: {:error, "Invalid auction"}
 

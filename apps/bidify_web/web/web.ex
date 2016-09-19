@@ -36,6 +36,8 @@ defmodule Bidify.Web.Web do
 
       import Bidify.Web.Router.Helpers
       import Bidify.Web.Gettext
+
+      import Bidify.Web.Session, only: [current_user: 1, logged_in?: 1]
     end
   end
 

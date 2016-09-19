@@ -18,6 +18,11 @@ defmodule Bidify.Domain.AuctionRepository do
   @callback save(Auction.t) :: :ok | {:error, term}
 
   @doc """
+  Persists an auction and assign an ID
+  """
+  @callback create(Auction.t) :: {:ok, Auction.t} | {:error, term}
+
+  @doc """
   Start a transaction
   """
   @callback transaction((... -> any)) :: :ok | {:error, term}
