@@ -30,5 +30,5 @@ defmodule Bidify.Domain.AuctionRepository do
   @doc """
   Rollback the current transaction
   """
-  @callback rollback :: :ok
+  @callback rollback(term) :: :ok
 end

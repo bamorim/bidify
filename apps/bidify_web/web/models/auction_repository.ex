@@ -5,7 +5,7 @@ defmodule Bidify.Web.AuctionRepository do
     with {:ok, auction} <- web_find(id), do: {:ok, to_domain(auction)}
   end
 
-  def web_find(id) do
+  defp web_find(id) do
     case Bidify.Web.Repo.get(Bidify.Web.Auction, id) do
       nil -> {:error, "Auction not found"}
       auction -> {:ok, auction}
@@ -15,14 +15,13 @@ defmodule Bidify.Web.AuctionRepository do
   def save(auction) do
     with \
       {:ok, web_auction} <- web_find(auction.id),
-      web_auction <- web_auction |> Bidify.Web.Auction.domain_changeset(auction),
+      web_auction <- web_auction |> domain_changeset(auction),
       {:ok, _} <- Bidify.Web.Repo.update(web_auction),
       do: :ok
   end
 
   def create(auction) do
-    web_auction = %Bidify.Web.Auction{}
-    |> Bidify.Web.Auction.domain_changeset(auction)
+    web_auction = %Bidify.Web.Auction{} |> domain_changeset(auction)
 
     case Bidify.Web.Repo.insert(web_auction) do
       {:ok, _} -> {:ok, auction}
@@ -38,7 +37,16 @@ defmodule Bidify.Web.AuctionRepository do
     Bidify.Web.Repo.rollback(error)
   end
 
-  def to_domain(%Bidify.Web.Auction{} = auction) do
+  defp domain_changeset(struct, auction) do
+    Bidify.Web.Auction.changeset(struct, struct_to_map(auction))
+  end
+
+  defp struct_to_map(%{__struct__: _} = struct) do
+    struct |> Map.to_list |> Keyword.delete(:__struct__) |> Enum.map(fn {k,v} -> {k,struct_to_map(v)} end) |> Enum.into(%{})
+  end
+  defp struct_to_map(any), do: any
+
+  defp to_domain(%Bidify.Web.Auction{} = auction) do
     %Bidify.Domain.Auction{
       id: auction.id,
       minimum_bid: %Bidify.Domain.Money{amount: auction.minimum_bid_amount},

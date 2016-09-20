@@ -15,16 +15,8 @@ defmodule Bidify.Web.Auction do
   """
   def changeset(struct, params \\ %{}) do
     struct
-    |> cast(params, [:name, :closed, :minimum_bid_amount])
-    |> validate_required([:name, :closed, :minimum_bid_amount])
-  end
-
-  def domain_changeset(struct, auction) do
-    struct
-    |> cast(%{}, [])
-    |> put_change(:seller_id, auction.seller_id)
-    |> put_change(:name, auction.name)
-    |> put_change(:closed, auction.closed)
-    |> put_change(:minimum_bid_amount, auction.minimum_bid.amount)
+    |> cast(params, [:name, :closed, :seller_id])
+    |> put_change(:minimum_bid_amount, params[:minimum_bid][:amount])
+    |> validate_required([:name, :closed, :seller_id, :minimum_bid_amount])
   end
 end
