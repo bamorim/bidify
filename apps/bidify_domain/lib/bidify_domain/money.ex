@@ -32,8 +32,8 @@ defmodule Bidify.Domain.Money do
   def sub(%Money{amount: a, currency: c}, v) when is_number(v) do
     %Money{amount: a-v, currency: c}
   end
-  def sub(v, m = %Money{}) when is_number(v) do
-    sub(m,v)
+  def sub(v, %Money{amount: a, currency: c}) when is_number(v) do
+    %Money{amount: v-a, currency: c}
   end
 end
 
