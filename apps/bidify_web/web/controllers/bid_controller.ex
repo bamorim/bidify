@@ -13,7 +13,6 @@ defmodule Bidify.Web.BidController do
 
     current_user = Bidify.Web.Session.current_user(conn)
     result = Bidify.Domain.AuctionService.place_bid(config, auction_id, current_user.id, value)
-    IO.puts(inspect(result))
     case result do
       {:ok, _} ->
         conn

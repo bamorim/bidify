@@ -5,7 +5,8 @@ defmodule Bidify.Web.Auction do
     field :name, :string
     field :closed, :boolean, default: false
     field :minimum_bid_amount, :integer
-    belongs_to :seller, Bidify.Web.Seller
+    belongs_to :seller, Bidify.Web.User
+    has_many :bids, Bidify.Web.Bid
 
     timestamps()
   end
