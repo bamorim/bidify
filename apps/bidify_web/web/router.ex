@@ -21,14 +21,16 @@ defmodule Bidify.Web.Router do
   scope "/", Bidify.Web do
     pipe_through [:browser, :browser_auth] # Use the default browser stack
 
-    get "/", AuctionsController, :index
+    get "/", AuctionController, :index
 
     resources "/registrations", RegistrationController, only: [:new, :create]
     get "/login", SessionController, :new
     post "/login", SessionController, :create
     get "/logout", SessionController, :delete
 
-    resources "/auctions", AuctionsController, only: [:new, :create, :show]
+    resources "/auctions", AuctionController, only: [:new, :create, :show] do
+      resources "/bids", BidController, only: [:create]
+    end
   end
 
   # Other scopes may use custom stacks.

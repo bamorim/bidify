@@ -48,9 +48,9 @@ defmodule Bidify.Domain.AuctionService do
         do
           {:ok, new_auction}
         else
-          err ->
+          {:error, err} ->
             config.charging_service.release(r_id)
-            config.auction_repository.rollback
+            config.auction_repository.rollback(err)
         end
       end
     end)

@@ -1,0 +1,21 @@
+<h1><%= @auction.name %></h1>
+<h4>Minimum bid: <%= @auction.minimum_bid %></h4>
+<h5>
+  Current bid:
+  <%= if @winning_bid do %>
+    <%= @winning_bid.value %>
+  <% else %>
+    None.
+  <% end %>
+</h5>
+
+<%= form_for @conn, auction_bid_path(@conn, :create, @auction.id), [name: :bid], fn f -> %>
+  <div class="form-group">
+    <label>Amount (cents)</label>
+    <%= text_input f, :amount, class: "form-control" %>
+  </div>
+
+  <div class="form-group">
+    <%= submit "Post", class: "btn btn-primary" %>
+  </div>
+<% end %>

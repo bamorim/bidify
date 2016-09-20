@@ -1,4 +1,4 @@
-defmodule Bidify.Web.AuctionsController do
+defmodule Bidify.Web.AuctionController do
   use Bidify.Web.Web, :controller
 
   def index(conn, _params) do
@@ -29,5 +29,13 @@ defmodule Bidify.Web.AuctionsController do
         |> put_flash(:error, "Something wrong dude")
         |> render("new.html")
     end
+  end
+
+  def show(conn, %{"id" => auction_id}) do
+    {auction_id, _} = Integer.parse(auction_id)
+    {:ok, auction} = Bidify.Web.AuctionRepository.find(auction_id)
+    winning_bid = Bidify.Domain.Auction.winning_bid(auction)
+    IO.puts(inspect(auction))
+    render conn, "show.html", auction: auction, winning_bid: winning_bid
   end
 end

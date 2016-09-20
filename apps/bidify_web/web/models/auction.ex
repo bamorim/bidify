@@ -22,6 +22,7 @@ defmodule Bidify.Web.Auction do
   def domain_changeset(struct, auction) do
     struct
     |> cast(%{}, [])
+    |> put_change(:seller_id, auction.seller_id)
     |> put_change(:name, auction.name)
     |> put_change(:closed, auction.closed)
     |> put_change(:minimum_bid_amount, auction.minimum_bid.amount)

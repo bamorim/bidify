@@ -1,6 +1,0 @@
-<ul>
-  <%= Enum.map @auctions, fn auction -> %>
-    <li><%= auction.name %></li>
-  <% end %>
-</ul>
-<%= link "Post an Auction", to: auctions_path(@conn, :new) %>
