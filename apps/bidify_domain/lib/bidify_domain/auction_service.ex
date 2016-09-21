@@ -11,6 +11,18 @@ defmodule Bidify.Domain.AuctionService do
   @type config :: %Config{charging_service: ChargingService.t, auction_repository: AuctionRepository.t}
   @type person_id :: term
 
+  defmacro __using__(opts) do
+    quote bind_quoted: [opts: opts] do
+      [charging_service: charging_service, auction_repository: auction_repository] = opts
+      @config %Config{charging_service: charging_service, auction_repository: auction_repository}
+      @mod Bidify.Domain.AuctionService
+
+      def create_auction(p_id, name, m_bid), do: @mod.create_auction(@config, p_id, name, m_bid)
+      def close_auction(a_id), do: @mod.close_auction(@config, a_id)
+      def place_bid(a_id, p_id, val), do: @mod.place_bid(@config, a_id, p_id, val)
+    end
+  end
+
   @doc "UseCase: Create an auction"
   @spec create_auction(config, person_id, binary, Money.t) :: {:ok, Auction.t} | {:error, term}
   def create_auction(config, person_id, name, minimum_bid) do

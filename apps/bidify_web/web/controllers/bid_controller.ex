@@ -6,13 +6,8 @@ defmodule Bidify.Web.BidController do
     {auction_id, _} = Integer.parse(auction_id)
     value = %Bidify.Domain.Money{amount: amount}
 
-    config = %Bidify.Domain.AuctionService.Config{
-      auction_repository: Bidify.Web.AuctionRepository,
-      charging_service: Bidify.Web.ChargingService
-    }
-
     current_user = Bidify.Web.Session.current_user(conn)
-    result = Bidify.Domain.AuctionService.place_bid(config, auction_id, current_user.id, value)
+    result = Bidify.Web.AuctionService.place_bid(auction_id, current_user.id, value)
     case result do
       {:ok, _} ->
         conn

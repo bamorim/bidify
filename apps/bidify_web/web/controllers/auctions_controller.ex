@@ -14,19 +14,15 @@ defmodule Bidify.Web.AuctionController do
     {minimum_bid_amount, _} = auction_params["minimum_bid_amount"] |> Integer.parse
     minimum_bid = Bidify.Domain.Money.new(minimum_bid_amount)
     name = auction_params["name"]
-    config = %Bidify.Domain.AuctionService.Config{
-      auction_repository: Bidify.Web.AuctionRepository,
-      charging_service: Bidify.Web.ChargingService
-    }
     current_user = Bidify.Web.Session.current_user(conn)
-    case Bidify.Domain.AuctionService.create_auction(config, current_user.id, name, minimum_bid) do
+    case Bidify.Web.AuctionService.create_auction(current_user.id, name, minimum_bid) do
       {:ok, auction} ->
         conn
         |> put_flash(:info, "Auction placed")
         |> redirect(to: "/")
-      _ ->
+      {:error, err} ->
         conn
-        |> put_flash(:error, "Something wrong dude")
+        |> put_flash(:error, "Error #{err}")
         |> render("new.html")
     end
   end
