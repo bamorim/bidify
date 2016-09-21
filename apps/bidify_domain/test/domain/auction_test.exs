@@ -1,6 +1,6 @@
 defmodule Bidify.Domain.AuctionTest do
   use ExUnit.Case
-  alias Bidify.Domain.{Auction, Money}
+  alias Bidify.Domain.{Auction, Money, Bid}
 
   @bidder_id "bidder_id"
   @seller_id "seller_id"
@@ -13,35 +13,40 @@ defmodule Bidify.Domain.AuctionTest do
     %Money{amount: a, currency: currency}
   end
 
+  def place_bid(auction, pid, value) do
+    bid = %Bid{value: value, reservation_id: :rid, bidder_id: pid}
+    auction |> Auction.place_bid(bid)
+  end
+
   test "we can place a bid" do
-    assert {:ok, _} = auction |> Auction.place_bid(@bidder_id, m(100), :rid)
+    assert {:ok, _} = auction |> place_bid(@bidder_id, m(100))
   end
 
   test "Cannot place bid smaller then the minimum bid" do
-    assert {:error, _} = auction |> Auction.place_bid(@bidder_id, m(99), :rid)
+    assert {:error, _} = auction |> place_bid(@bidder_id, m(99))
   end
 
   test "Bidder cannot bid on a auction he is already winning"do
-    {:ok, winning_auction} = auction |> Auction.place_bid(@bidder_id, m(101), :rid)
-    assert {:error, _} = winning_auction |> Auction.place_bid(@bidder_id, m(102), :rid)
+    {:ok, winning_auction} = auction |> place_bid(@bidder_id, m(101))
+    assert {:error, _} = winning_auction |> place_bid(@bidder_id, m(102))
   end
 
   test "Cannot bid less than the current winning bid's amount" do
-    {:ok, new_auction} = auction |> Auction.place_bid(@bidder_id, m(102), :rid)
-    assert {:error, _} = new_auction |> Auction.place_bid("another_bidder_id", m(101), :rid)
+    {:ok, new_auction} = auction |> place_bid(@bidder_id, m(102))
+    assert {:error, _} = new_auction |> place_bid("another_bidder_id", m(101))
   end
 
   test "Cannot bid same as the current winning bid's amount" do
-    {:ok, new_auction} = auction |> Auction.place_bid(@bidder_id, m(102), :rid)
-    assert {:error, _} = new_auction |> Auction.place_bid("another_bidder_id", m(102), :rid)
+    {:ok, new_auction} = auction |> place_bid(@bidder_id, m(102))
+    assert {:error, _} = new_auction |> place_bid("another_bidder_id", m(102))
   end
 
   test "Cannot bid in his own auction" do
-    assert {:error, _} = auction |> Auction.place_bid(@seller_id, m(101), :rid)
+    assert {:error, _} = auction |> place_bid(@seller_id, m(101))
   end
 
   test "Cannot bid in a different cuurrency" do
-    assert {:error, _} = auction |> Auction.place_bid(@bidder_id, m(101,:usd), :rid)
+    assert {:error, _} = auction |> place_bid(@bidder_id, m(101,:usd))
   end
 
   test "Can create an auction" do
@@ -68,6 +73,6 @@ defmodule Bidify.Domain.AuctionTest do
     {:ok, auction} = Auction.close(auction)
 
     assert {:error, _} = auction
-    |> Auction.place_bid(@bidder_id, m(100), :rid)
+    |> place_bid(@bidder_id, m(100))
   end
 end

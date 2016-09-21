@@ -33,33 +33,32 @@ defmodule Bidify.Domain.Auction do
   end
 
   @doc "Use Case: Place a bid"
-  @spec place_bid(t, person_id, Money.t, term) :: {:ok, t} | {:error, binary}
-  def place_bid(auction, bidder_id, value, rid) do
+  @spec place_bid(t, Bid.t) :: {:ok, t} | {:error, binary}
+  def place_bid(auction, bid) do
     cond do
       auction.closed ->
         {:error, "auction is already closed"}
 
-      value.currency != auction.minimum_bid.currency ->
+      bid.value.currency != auction.minimum_bid.currency ->
         {:error, "incorrect currency"}
 
-      minimum_bid_value(auction) |> bt(value) ->
+      minimum_bid_value(auction) |> bt(bid.value) ->
         {:error, "bid value is not enough"}
 
-      winning_bidder_id(auction) == bidder_id ->
+      winning_bidder_id(auction) == bid.bidder_id ->
         {:error, "cannot bid on auction when winning already"}
 
-      auction.seller_id == bidder_id ->
+      auction.seller_id == bid.bidder_id ->
         {:error, "cannot bid on own auction"}
 
       true ->
-        {:ok, auction |> do_place_bid(bidder_id, value, rid)}
+        {:ok, auction |> do_place_bid(bid)}
     end
   end
 
   @doc "Actually modify the auction to include the bid"
-  @spec do_place_bid(t, person_id, Money.t, term) :: t
-  defp do_place_bid(auction, bidder_id, value, rid) do
-    bid = %Bid{bidder_id: bidder_id, value: value, reservation_id: rid}
+  @spec do_place_bid(t, Bid.t) :: t
+  defp do_place_bid(auction, bid) do
     %{auction | bids: [bid | auction.bids]}
   end
 
